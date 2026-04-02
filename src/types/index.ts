@@ -4,6 +4,7 @@ export interface AppSettings {
   server_executable: string | null;
   log_max_lines: number;
   minimize_to_tray: boolean;
+  last_active_profile_id: string | null;
 }
 
 export interface GlobalConfig {

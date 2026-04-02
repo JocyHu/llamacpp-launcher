@@ -7,6 +7,7 @@ pub struct AppSettings {
     pub server_executable: Option<String>,
     pub log_max_lines: u32,
     pub minimize_to_tray: bool,
+    pub last_active_profile_id: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -62,6 +63,7 @@ impl Default for AppConfig {
                 server_executable: None,
                 log_max_lines: 500,
                 minimize_to_tray: false,
+                last_active_profile_id: None,
             },
             global: GlobalConfig {
                 host: "0.0.0.0".to_string(),

@@ -72,7 +72,9 @@ export default function App() {
       try {
         const data: AppConfig = await invoke("get_config");
         setConfig(data);
-        setActiveProfileId(data.current_profile_id || (data.profiles.length > 0 ? data.profiles[0].id : null));
+        // Prioritize last_active_profile_id from settings, fallback to current_profile_id or first profile
+        const initialId = data.settings?.last_active_profile_id || data.current_profile_id || (data.profiles.length > 0 ? data.profiles[0].id : null);
+        setActiveProfileId(initialId);
         if (data.settings) applyTheme(data.settings.theme);
       } catch (e) {
         showToast("FAILED TO LOAD CONFIG", "error");
@@ -121,7 +123,11 @@ export default function App() {
   const switchProfile = (id: string | null) => {
     if (!config) return;
     setActiveProfileId(id);
-    const newConfig = { ...config, current_profile_id: id };
+    const newConfig = { 
+      ...config, 
+      current_profile_id: id,
+      settings: { ...config.settings, last_active_profile_id: id }
+    };
     handleUpdateConfig(newConfig, true);
   };
 
@@ -152,7 +158,12 @@ export default function App() {
       repeat_penalty: 1.0,
       custom_args: null,
     };
-    const newConfig: AppConfig = { ...config, profiles: [...(config.profiles || []), newProfile], current_profile_id: newProfile.id };
+    const newConfig: AppConfig = { 
+      ...config, 
+      profiles: [...(config.profiles || []), newProfile], 
+      current_profile_id: newProfile.id,
+      settings: { ...config.settings, last_active_profile_id: newProfile.id }
+    };
     handleUpdateConfig(newConfig, true);
     setActiveProfileId(newProfile.id);
   };
@@ -161,7 +172,12 @@ export default function App() {
     if (!config) return;
     const nextProfiles = config.profiles.filter(p => p.id !== id);
     const nextId = activeProfileId === id ? (nextProfiles[0]?.id || null) : activeProfileId;
-    const newConfig = { ...config, profiles: nextProfiles, current_profile_id: nextId };
+    const newConfig = { 
+      ...config, 
+      profiles: nextProfiles, 
+      current_profile_id: nextId,
+      settings: { ...config.settings, last_active_profile_id: nextId }
+    };
     handleUpdateConfig(newConfig);
     setActiveProfileId(nextId);
   };
@@ -211,6 +227,8 @@ export default function App() {
     } else {
       if (!activeProfileId || !config) return;
       setLogs([]);
+      // Ensure config is saved before launching to persist any recent edits
+      await handleUpdateConfig(config, true);
       try { await invoke("start_server", { config, profileId: activeProfileId }); setIsRunning(true); showToast(t("server_started")); } 
       catch (e: any) { showToast(e.message || e, "error"); setIsRunning(false); }
     }
