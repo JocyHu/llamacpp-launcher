@@ -6,7 +6,7 @@ import {
   Settings, Play, Square, Plus, Trash2, Terminal, Save,
   Zap, Activity, Monitor, FolderOpen, Code2, HardDrive, Sparkles,
   Lock, Thermometer, Lightbulb, CheckCircle2, AlertCircle, FolderTree,
-  FileCode2, Box, Eye, X, Palette, Globe, Binary, History, Moon, Sun, Laptop
+  FileCode2, Box, Eye, EyeOff, Key, X, Palette, Globe, Binary, History, Moon, Sun, Laptop
 } from "lucide-react";
 import { AppConfig, Profile } from "./types";
 import { translations, TranslationKey } from "./translations";
@@ -41,6 +41,7 @@ export default function App() {
   const [auditData, setAuditData] = useState<LaunchAudit | null>(null);
   const [auditTab, setAuditTab] = useState<"cli" | "ini">("cli");
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [showApiKey, setShowApiKey] = useState(false);
 
   const logEndRef = useRef<HTMLDivElement>(null);
 
@@ -354,6 +355,26 @@ export default function App() {
             <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider px-1 flex items-center gap-2 text-primary"><Activity className="w-3 h-3" /> {t("global_settings")}</div>
             <div className="space-y-3">
               <div className="space-y-1"><label className="text-[9px] font-bold text-muted-foreground ml-1 uppercase tracking-tighter">{t("listen_host")}</label><input value={config.global.host} onChange={(e) => handleUpdateConfig({ ...config, global: { ...config.global, host: e.target.value }}, true)} className="w-full bg-background/50 border border-border/60 rounded-lg px-2.5 py-1.5 text-xs outline-none focus:ring-1 focus:ring-primary/40 text-foreground" /></div>
+              <div className="space-y-1 relative group/key">
+                <label className="text-[9px] font-bold text-muted-foreground ml-1 uppercase tracking-tighter flex items-center gap-1.5">
+                  <Key className="w-3 h-3" /> {t("api_key_label")}
+                </label>
+                <div className="relative">
+                  <input 
+                    type={showApiKey ? "text" : "password"}
+                    value={config.global.api_key} 
+                    onChange={(e) => handleUpdateConfig({ ...config, global: { ...config.global, api_key: e.target.value }}, true)} 
+                    placeholder={t("api_key_hint")}
+                    className="w-full bg-background/50 border border-border/60 rounded-lg pl-2.5 pr-10 py-1.5 text-xs outline-none focus:ring-1 focus:ring-primary/40 text-foreground transition-all" 
+                  />
+                  <button 
+                    onClick={() => setShowApiKey(!showApiKey)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 hover:bg-secondary rounded-md text-muted-foreground transition-colors"
+                  >
+                    {showApiKey ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+              </div>
               <div className="flex gap-2 text-foreground">
                 <div className="flex-1 space-y-1"><label className="text-[9px] font-bold text-muted-foreground ml-1 uppercase tracking-tighter">{t("port")}</label><input type="number" value={config.global.port} onChange={(e) => handleUpdateConfig({ ...config, global: { ...config.global, port: parseInt(e.target.value) || 8080 }}, true)} className="w-full bg-background/50 border border-border/60 rounded-lg px-2.5 py-1.5 text-xs outline-none text-foreground" /></div>
                 <div className="flex-1 space-y-1"><label className="text-[9px] font-bold text-muted-foreground ml-1 uppercase tracking-tighter">{t("idle_time")}</label><input type="number" value={config.global.sleep_idle_seconds} onChange={(e) => handleUpdateConfig({ ...config, global: { ...config.global, sleep_idle_seconds: parseInt(e.target.value) || 0 }}, true)} className="w-full bg-background/50 border border-border/60 rounded-lg px-2.5 py-1.5 text-xs outline-none text-foreground" /></div>
