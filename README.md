@@ -1,4 +1,4 @@
-# 🦙 Llama Control
+# 🦙 llamacpp-control
 
 [English](#english) | [简体中文](#简体中文)
 
@@ -6,7 +6,7 @@
 
 ## English
 
-**Llama Control** is a modern, high-performance GUI launcher for `llama.cpp` (specifically `llama-server`). Built with Tauri v2 and React, it provides a sleek interface to manage, configure, and monitor your local LLM inference servers with ease.
+**llamacpp-control** is a modern, high-performance GUI launcher for `llama.cpp` (specifically `llama-server`). Built with Tauri v2 and React, it provides a sleek interface to manage, configure, and monitor your local LLM inference servers with ease.
 
 ### ✨ Key Features
 
@@ -59,7 +59,7 @@ npm run tauri build
 
 ## 简体中文
 
-**Llama Control** 是一款为 `llama.cpp`（特别是 `llama-server`）打造的现代化、高性能 GUI 启动器。基于 Tauri v2 和 React 构建，它为您提供了优雅的界面来轻松管理、配置和监控本地 LLM 推理服务器。
+**llamacpp-control** 是一款为 `llama.cpp`（特别是 `llama-server`）打造的现代化、高性能 GUI 启动器。基于 Tauri v2 和 React 构建，它为您提供了优雅的界面来轻松管理、配置和监控本地 LLM 推理服务器。
 
 ### ✨ 核心特性
 
