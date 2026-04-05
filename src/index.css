@@ -41,6 +41,9 @@
 
     --radius: 1.25rem;
 
+    --terminal-bg: rgba(255, 255, 255, 0.3);
+    --terminal-border: rgba(0, 0, 0, 0.05);
+
     /* Legacy Gradient Support */
     --gradient-start: 211 100% 50%;
     --gradient-end: 189 89% 54%;
@@ -79,6 +82,9 @@
     --border: 240 4% 16%;
     --input: 240 4% 16%;
     --ring: 211 100% 52%;
+
+    --terminal-bg: rgba(0, 0, 0, 0.25);
+    --terminal-border: rgba(255, 255, 255, 0.05);
 
     /* Legacy Gradient Support */
     --gradient-start: 211 100% 52%;
@@ -122,6 +128,12 @@
   
   .ios-island-content {
     @apply ios-glass rounded-ios-content shadow-2xl;
+  }
+
+  .ios-terminal-glass {
+    @apply rounded-ios-item font-mono overflow-hidden border backdrop-blur-md;
+    background: var(--terminal-bg);
+    border-color: var(--terminal-border);
   }
 }
 

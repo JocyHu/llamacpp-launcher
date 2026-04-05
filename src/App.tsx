@@ -249,8 +249,17 @@ export default function App() {
   );
 
   return (
-    <div className="flex h-screen bg-background text-foreground overflow-hidden font-sans selection:bg-primary/20 relative transition-colors duration-300">
+    <div className="flex h-screen bg-background text-foreground overflow-hidden font-sans selection:bg-primary/20 relative transition-colors duration-500 p-4 gap-4">
       
+      {/* Background Atmosphere stays fixed/absolute */}
+      <div className="bg-atmosphere">
+         <div className="bg-atmosphere-gradient" />
+         <div className="bg-atmosphere-noise" />
+         <div className="bg-orb bg-orb-1" />
+         <div className="bg-orb bg-orb-2" />
+         <div className="bg-orb bg-orb-3" />
+      </div>
+
       {/* 灵动岛通知 */}
       <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[150] flex flex-col items-center gap-2 w-full pointer-events-none px-4">
         {toasts.map(t => (
@@ -344,16 +353,35 @@ export default function App() {
         </div>
       )}
 
-      {/* 侧边栏 */}
-      <div className="w-64 bg-secondary/30 border-r border-border/60 flex flex-col backdrop-blur-xl shrink-0 transition-colors text-foreground">
+      {/* Sidebar Island */}
+      <div className="w-64 ios-island-sidebar flex flex-col shrink-0 z-10">
         <div className="p-6 border-b border-border/60 flex items-center gap-3 text-primary transition-colors"><Zap className="w-6 h-6 fill-current" /><span className="font-black text-lg tracking-tighter uppercase">{t("app_title")}</span></div>
         <div className="flex-1 overflow-y-auto p-4 space-y-6 scrollbar-hide text-foreground">
           <section>
             <div className="px-2 mb-3 flex items-center justify-between"><span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{t("preset_manager")}</span><button onClick={addProfile} className="hover:text-primary transition-colors p-1 text-foreground"><Plus className="w-4 h-4" /></button></div>
             <div className="space-y-1">
               {(config.profiles || []).map(p => (
-                <div key={p.id} onClick={() => switchProfile(p.id)} className={cn("group flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all border border-transparent", activeProfileId === p.id ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-[1.02]" : "hover:bg-secondary/80")}>
-                  <Box className={cn("w-4 h-4 shrink-0", activeProfileId === p.id ? "text-white" : "text-muted-foreground")} /><span className="truncate text-xs font-bold flex-1">{p.name}</span><button onClick={(e) => { e.stopPropagation(); deleteProfile(p.id); }} className="opacity-0 group-hover:opacity-100 hover:text-destructive transition-opacity"><Trash2 className="w-3.5 h-3.5" /></button>
+                <div 
+                  key={p.id} 
+                  onClick={() => switchProfile(p.id)} 
+                  className={cn(
+                    "group flex items-center gap-3 px-4 h-12 rounded-ios-item cursor-pointer transition-all relative", 
+                    activeProfileId === p.id 
+                      ? "bg-[#0A84FF]/10 text-[#0A84FF] shadow-sm" 
+                      : "hover:bg-white/5 text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  {activeProfileId === p.id && (
+                    <div className="absolute left-0 w-1 h-6 bg-[#0A84FF] rounded-r-full" />
+                  )}
+                  <Box className={cn("w-4 h-4 shrink-0", activeProfileId === p.id ? "text-[#0A84FF]" : "text-muted-foreground")} />
+                  <span className="truncate text-xs font-bold flex-1">{p.name}</span>
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); deleteProfile(p.id); }} 
+                    className="opacity-0 group-hover:opacity-100 hover:text-destructive transition-opacity"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
                 </div>
               ))}
             </div>
@@ -390,23 +418,41 @@ export default function App() {
             </div>
           </section>
         </div>
-        <div className="p-4 border-t border-border/60 bg-background/20 text-foreground"><button onClick={() => setIsSettingsOpen(true)} className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl hover:bg-secondary transition-all group focus:outline-none"><Settings className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:rotate-90 transition-all duration-500" /><span className="text-sm font-bold text-muted-foreground group-hover:text-foreground transition-colors">{t("system_settings")}</span></button></div>
+        <div className="p-4 border-t border-border/60 bg-background/20 text-foreground"><button onClick={() => setIsSettingsOpen(true)} className="w-full flex items-center gap-3 px-4 py-3 rounded-ios-item hover:bg-secondary transition-all group focus:outline-none"><Settings className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:rotate-90 transition-all duration-500" /><span className="text-sm font-bold text-muted-foreground group-hover:text-foreground transition-colors">{t("system_settings")}</span></button></div>
       </div>
 
-      {/* 主界面 */}
-      <div className="flex-1 flex flex-col bg-background/50 relative overflow-hidden min-w-0 transition-colors text-foreground">
+      {/* Main Content Island */}
+      <div className="flex-1 ios-island-content relative overflow-hidden flex flex-col z-10">
         {activeProfile ? (
           <>
-            <header className="h-16 border-b border-border/60 flex items-center justify-between px-8 bg-background/40 backdrop-blur-xl shrink-0 z-20 text-foreground">
+            <header className="h-20 border-b border-border/60 flex items-center justify-between px-8 bg-background/40 backdrop-blur-xl shrink-0 z-20 text-foreground">
               <div className="flex items-center gap-4 min-w-0 text-foreground">
                 <input value={activeProfile.name} onChange={(e) => updateProfileField(activeProfile.id, "name", e.target.value)} onBlur={() => handleUpdateConfig(config)} className="text-xl font-black bg-transparent border-none focus:ring-0 p-1 hover:bg-muted/30 transition-colors rounded truncate max-w-sm outline-none shrink text-foreground" />
-                <div className={cn("px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest shrink-0 border", isRunning ? "bg-green-500/10 text-green-500 border-green-500/20 animate-pulse" : "bg-muted text-muted-foreground border-transparent")}>{isRunning ? t("running") : t("standby")}</div>
+                <div className={cn(
+                  "px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest shrink-0 border", 
+                  isRunning 
+                    ? "bg-[#30D158]/10 text-[#30D158] border-[#30D158]/20 animate-pulse" 
+                    : "bg-muted text-muted-foreground border-transparent"
+                )}>
+                  {isRunning ? t("running") : t("standby")}
+                </div>
               </div>
               <div className="flex items-center gap-3 shrink-0 text-foreground">
-                <button onClick={handleOpenAudit} className="p-2.5 rounded-xl border border-border/60 hover:bg-secondary/80 transition-all text-muted-foreground active:scale-95"><Eye className="w-4.5 h-4.5" /></button>
-                <button onClick={() => handleUpdateConfig(config)} disabled={isSaving} className={cn("flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border/60 hover:bg-secondary/80 transition-all text-[10px] font-black active:scale-95", isSaving ? "opacity-50" : "")}><Save className={cn("w-4 h-4 text-muted-foreground", isSaving ? "animate-spin" : "")} /><span>{isSaving ? t("saving") : t("save_config")}</span></button>
+                <button onClick={handleOpenAudit} className="p-2.5 rounded-ios-item border border-border/60 hover:bg-secondary/80 transition-all text-muted-foreground active:scale-95"><Eye className="w-4.5 h-4.5" /></button>
+                <button onClick={() => handleUpdateConfig(config)} disabled={isSaving} className={cn("flex items-center gap-2 px-4 py-2.5 rounded-ios-item border border-border/60 hover:bg-secondary/80 transition-all text-[10px] font-black active:scale-95", isSaving ? "opacity-50" : "")}><Save className={cn("w-4 h-4 text-muted-foreground", isSaving ? "animate-spin" : "")} /><span>{isSaving ? t("saving") : t("save_config")}</span></button>
                 <div className="h-6 w-px bg-border/60 mx-1" />
-                <button onClick={toggleServer} className={cn("flex items-center gap-3 px-8 py-2.5 rounded-xl font-black text-sm transition-all shadow-xl active:scale-95", isRunning ? "bg-destructive text-destructive-foreground shadow-destructive/20" : "bg-primary text-primary-foreground shadow-primary/20")}>{isRunning ? <Square className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current" />}<span>{isRunning ? t("stop_server") : t("launch_server")}</span></button>
+                <button 
+                  onClick={toggleServer} 
+                  className={cn(
+                    "flex items-center gap-3 px-8 py-2.5 rounded-ios-btn font-black text-sm transition-all shadow-xl active:scale-95", 
+                    isRunning 
+                      ? "bg-[#FF453A] text-white shadow-[#FF453A]/20" 
+                      : "bg-[#0A84FF] text-white shadow-[#0A84FF]/20"
+                  )}
+                >
+                  {isRunning ? <Square className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current" />}
+                  <span>{isRunning ? t("stop_server") : t("launch_server")}</span>
+                </button>
               </div>
             </header>
 
@@ -560,16 +606,34 @@ export default function App() {
                 <div className="bg-card p-6 rounded-[2.5rem] border border-border/60 shadow-xl space-y-4 xl:col-span-2 transition-all text-foreground">
                   <div className="flex items-center gap-2 px-1 text-slate-500"><Terminal className="w-5 h-5" /><h3 className="font-black text-sm uppercase tracking-tight">{t("advanced_args_title")}</h3></div>
                   <div className="bg-slate-900/5 dark:bg-white/5 p-4 rounded-3xl border border-dashed border-border/60">
-                    <textarea value={activeProfile.custom_args || ""} onChange={(e) => updateProfileField(activeProfile.id, "custom_args", e.target.value)} className="w-full h-24 bg-transparent border-none text-xs font-mono resize-none focus:ring-0 outline-none text-foreground placeholder:text-muted-foreground/40" placeholder={t("advanced_args_hint")} />
+                    <textarea value={activeProfile.custom_args || ""} onChange={(e) => updateProfileField(activeProfile.id, "custom_args", e.target.value)} className="w-full h-24 bg-transparent border-none text-xs font-mono resize-none focus:ring-0 outline-none text-foreground placeholder:text-muted-foreground/60" placeholder={t("advanced_args_hint")} />
                   </div>
                 </div>
               </div>
 
-              <div className="flex-1 min-h-[350px] flex flex-col bg-slate-950 rounded-[2.5rem] border border-white/10 shadow-2xl overflow-hidden group mb-10 text-white">
-                <div className="px-8 py-4 border-b border-white/5 bg-white/5 flex items-center justify-between backdrop-blur-md shrink-0"><div className="flex items-center gap-3 text-primary transition-colors"><Terminal className="w-5 h-5" /><span className="text-[10px] font-bold text-white/40 uppercase tracking-[0.3em] font-mono">{t("terminal_title")}</span></div><button onClick={() => setLogs([])} className="text-[9px] font-bold text-white/30 hover:text-white border border-white/10 hover:border-white/20 px-4 py-1.5 rounded-full transition-all tracking-widest uppercase">{t("clear_logs")}</button></div>
-                <div className="flex-1 overflow-y-auto p-8 font-mono text-[11px] leading-relaxed text-blue-100/70 space-y-2 custom-scrollbar bg-slate-950">
-                  {logs.length === 0 && <div className="h-full flex flex-col items-center justify-center text-white/5 gap-4"><HardDrive className="w-12 h-12 opacity-5 animate-pulse" /><span className="text-[10px] tracking-[0.5em] uppercase font-light">{t("waiting_stream")}</span></div>}
-                  {(logs || []).map((log, i) => (<div key={i} className="break-all whitespace-pre-wrap flex gap-4 animate-in slide-in-from-left-1 duration-200"><span className="text-white/10 shrink-0 select-none w-10 text-right italic font-light">{i+1}</span><span className={cn("text-blue-100/80", log.toLowerCase().includes("error") ? "text-red-400 font-bold" : log.toLowerCase().includes("warning") ? "text-yellow-400" : log.startsWith("[GUI]") ? "text-primary font-bold" : "")}>{log}</span></div>))}
+              <div className="flex-1 min-h-[400px] flex flex-col ios-terminal-glass group mb-10">
+                <div className="px-8 py-4 border-b border-border/10 bg-black/5 dark:bg-white/5 flex items-center justify-between backdrop-blur-md shrink-0">
+                  <div className="flex items-center gap-3 text-primary transition-colors">
+                    <Terminal className="w-5 h-5" />
+                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.3em] font-mono">{t("terminal_title")}</span>
+                  </div>
+                  <button onClick={() => setLogs([])} className="text-[9px] font-bold text-muted-foreground hover:text-foreground border border-border/40 hover:border-border/60 px-4 py-1.5 rounded-full transition-all tracking-widest uppercase">{t("clear_logs")}</button>
+                </div>
+                <div className="flex-1 overflow-y-auto p-8 font-mono text-[12px] leading-relaxed text-foreground/80 space-y-2 custom-scrollbar">
+                  {logs.length === 0 && <div className="h-full flex flex-col items-center justify-center text-foreground/5 gap-4"><HardDrive className="w-12 h-12 opacity-5 animate-pulse" /><span className="text-[10px] tracking-[0.5em] uppercase font-light">{t("waiting_stream")}</span></div>}
+                  {(logs || []).map((log, i) => (
+                    <div key={i} className="break-all whitespace-pre-wrap flex gap-4 animate-in slide-in-from-left-1 duration-200">
+                      <span className="text-muted-foreground/30 shrink-0 select-none w-10 text-right italic font-light">{i+1}</span>
+                      <span className={cn(
+                        "text-foreground/90", 
+                        log.toLowerCase().includes("error") ? "text-red-400 font-bold" : 
+                        log.toLowerCase().includes("warning") ? "text-yellow-400" : 
+                        log.startsWith("[GUI]") ? "text-primary/90 font-bold" : ""
+                      )}>
+                        {log}
+                      </span>
+                    </div>
+                  ))}
                   <div ref={logEndRef} />
                 </div>
               </div>
