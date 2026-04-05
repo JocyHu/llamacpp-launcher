@@ -43,6 +43,13 @@ pub struct Profile {
     pub min_p: f32,
     pub presence_penalty: f32,
     pub repeat_penalty: f32,
+    pub use_temp: bool,
+    pub use_presence_penalty: bool,
+    pub use_top_p: bool,
+    pub use_top_k: bool,
+    pub use_min_p: bool,
+    pub use_repeat_penalty: bool,
+    pub use_batch_size: bool,
     pub custom_args: Option<String>, // 新增：自定义高级参数
 }
 

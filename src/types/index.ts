@@ -46,6 +46,15 @@ export interface Profile {
   min_p: number;
   presence_penalty: number;
   repeat_penalty: number;
+
+  // 采样参数独立开关
+  use_temp: boolean;
+  use_presence_penalty: boolean;
+  use_top_p: boolean;
+  use_top_k: boolean;
+  use_min_p: boolean;
+  use_repeat_penalty: boolean;
+  use_batch_size: boolean;
   
   // 自定义高级参数
   custom_args: string | null;
