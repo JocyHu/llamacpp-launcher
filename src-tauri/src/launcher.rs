@@ -83,13 +83,29 @@ fn generate_ini_content(profile: &Profile, detected: &[DetectedModel]) -> String
     ini_content.push_str(&format!("ctx-size = {}\n", profile.ctx_size));
     let fa_val = match profile.flash_attn.as_str() { "on" => "true", "off" => "false", _ => "auto" };
     ini_content.push_str(&format!("flash-attn = {}\n", fa_val));
-    ini_content.push_str(&format!("temp = {}\n", profile.temp));
-    ini_content.push_str(&format!("top-p = {}\n", profile.top_p));
-    ini_content.push_str(&format!("top-k = {}\n", profile.top_k));
-    ini_content.push_str(&format!("min-p = {}\n", profile.min_p));
-    ini_content.push_str(&format!("repeat-penalty = {}\n", profile.repeat_penalty));
-    ini_content.push_str(&format!("presence-penalty = {}\n", profile.presence_penalty));
-    ini_content.push_str(&format!("batch-size = {}\n", profile.batch_size));
+    
+    if profile.use_temp {
+        ini_content.push_str(&format!("temp = {}\n", profile.temp));
+    }
+    if profile.use_top_p {
+        ini_content.push_str(&format!("top-p = {}\n", profile.top_p));
+    }
+    if profile.use_top_k {
+        ini_content.push_str(&format!("top-k = {}\n", profile.top_k));
+    }
+    if profile.use_min_p {
+        ini_content.push_str(&format!("min-p = {}\n", profile.min_p));
+    }
+    if profile.use_repeat_penalty {
+        ini_content.push_str(&format!("repeat-penalty = {}\n", profile.repeat_penalty));
+    }
+    if profile.use_presence_penalty {
+        ini_content.push_str(&format!("presence-penalty = {}\n", profile.presence_penalty));
+    }
+    if profile.use_batch_size {
+        ini_content.push_str(&format!("batch-size = {}\n", profile.batch_size));
+    }
+    
     ini_content.push_str(&format!("ubatch-size = {}\n", profile.ubatch_size));
     if !profile.cache_type_k.is_empty() { ini_content.push_str(&format!("cache-type-k = {}\n", profile.cache_type_k)); }
     if !profile.cache_type_v.is_empty() { ini_content.push_str(&format!("cache-type-v = {}\n", profile.cache_type_v)); }
@@ -139,14 +155,31 @@ fn push_profile_args(args: &mut Vec<String>, profile: &Profile) {
     args.push("--ctx-size".to_string()); args.push(profile.ctx_size.to_string());
     args.push("--n-gpu-layers".to_string()); args.push(profile.n_gpu_layers.clone());
     args.push("--flash-attn".to_string()); args.push(profile.flash_attn.clone());
-    args.push("--batch-size".to_string()); args.push(profile.batch_size.to_string());
+    
+    if profile.use_batch_size {
+        args.push("--batch-size".to_string()); args.push(profile.batch_size.to_string());
+    }
+    
     args.push("--ubatch-size".to_string()); args.push(profile.ubatch_size.to_string());
-    args.push("--temp".to_string()); args.push(profile.temp.to_string());
-    args.push("--top-p".to_string()); args.push(profile.top_p.to_string());
-    args.push("--top-k".to_string()); args.push(profile.top_k.to_string());
-    args.push("--min-p".to_string()); args.push(profile.min_p.to_string());
-    args.push("--presence-penalty".to_string()); args.push(profile.presence_penalty.to_string());
-    args.push("--repeat-penalty".to_string()); args.push(profile.repeat_penalty.to_string());
+    
+    if profile.use_temp {
+        args.push("--temp".to_string()); args.push(profile.temp.to_string());
+    }
+    if profile.use_top_p {
+        args.push("--top-p".to_string()); args.push(profile.top_p.to_string());
+    }
+    if profile.use_top_k {
+        args.push("--top-k".to_string()); args.push(profile.top_k.to_string());
+    }
+    if profile.use_min_p {
+        args.push("--min-p".to_string()); args.push(profile.min_p.to_string());
+    }
+    if profile.use_presence_penalty {
+        args.push("--presence-penalty".to_string()); args.push(profile.presence_penalty.to_string());
+    }
+    if profile.use_repeat_penalty {
+        args.push("--repeat-penalty".to_string()); args.push(profile.repeat_penalty.to_string());
+    }
     
     if let Some(ref mm) = profile.mmproj_path { 
         if !mm.is_empty() { 
