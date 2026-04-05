@@ -475,21 +475,27 @@ export default function App() {
                     {/* Tier 1: Core Controls (Full Width) */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                       {/* Temperature Slider */}
-                      <div className="space-y-4">
+                      <div className={cn("space-y-4 transition-opacity", !activeProfile.use_temp && "opacity-40")}>
                         <div className="flex justify-between items-center px-1">
-                          <label className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-2">
-                            <Thermometer className="w-4 h-4 text-orange-500" /> {t("temperature")}
+                          <label 
+                            className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-2 cursor-pointer select-none"
+                            onClick={() => updateProfileField(activeProfile.id, "use_temp", !activeProfile.use_temp)}
+                          >
+                            <Thermometer className={cn("w-4 h-4 transition-colors", activeProfile.use_temp ? "text-orange-500" : "text-muted-foreground")} /> 
+                            <span className={cn(activeProfile.use_temp ? "" : "line-through")}>{t("temperature")}</span>
                           </label>
                           <input 
                             type="number" step="0.01" value={activeProfile.temp} 
+                            disabled={!activeProfile.use_temp}
                             onChange={(e) => updateProfileField(activeProfile.id, "temp", parseFloat(e.target.value))}
-                            className="w-16 bg-background border border-orange-200/50 rounded-lg px-2 py-1 text-xs font-mono font-bold text-orange-600 outline-none text-center transition-colors" 
+                            className="w-16 bg-background border border-orange-200/50 rounded-lg px-2 py-1 text-xs font-mono font-bold text-orange-600 outline-none text-center transition-colors disabled:opacity-50" 
                           />
                         </div>
                         <input 
                           type="range" min="0" max="2" step="0.01" value={activeProfile.temp} 
+                          disabled={!activeProfile.use_temp}
                           onChange={(e) => updateProfileField(activeProfile.id, "temp", parseFloat(e.target.value))}
-                          className="w-full h-2 bg-orange-200/30 rounded-lg appearance-none cursor-pointer accent-orange-500" 
+                          className="w-full h-2 bg-orange-200/30 rounded-lg appearance-none cursor-pointer accent-orange-500 disabled:accent-slate-400" 
                         />
                         <div className="flex justify-between px-1 text-[8px] font-black text-muted-foreground/40 uppercase tracking-widest">
                           <span>{t("precision")}</span><span>{t("creative")}</span>
@@ -497,21 +503,27 @@ export default function App() {
                       </div>
 
                       {/* Presence Penalty Slider */}
-                      <div className="space-y-4">
+                      <div className={cn("space-y-4 transition-opacity", !activeProfile.use_presence_penalty && "opacity-40")}>
                         <div className="flex justify-between items-center px-1">
-                          <label className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-2">
-                            <Zap className="w-4 h-4 text-amber-500" /> {t("presence_penalty")}
+                          <label 
+                            className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-2 cursor-pointer select-none"
+                            onClick={() => updateProfileField(activeProfile.id, "use_presence_penalty", !activeProfile.use_presence_penalty)}
+                          >
+                            <Zap className={cn("w-4 h-4 transition-colors", activeProfile.use_presence_penalty ? "text-amber-500" : "text-muted-foreground")} /> 
+                            <span className={cn(activeProfile.use_presence_penalty ? "" : "line-through")}>{t("presence_penalty")}</span>
                           </label>
                           <input 
                             type="number" step="0.1" value={activeProfile.presence_penalty} 
+                            disabled={!activeProfile.use_presence_penalty}
                             onChange={(e) => updateProfileField(activeProfile.id, "presence_penalty", parseFloat(e.target.value))}
-                            className="w-16 bg-background border border-amber-200/50 rounded-lg px-2 py-1 text-xs font-mono font-bold text-amber-600 outline-none text-center transition-colors" 
+                            className="w-16 bg-background border border-amber-200/50 rounded-lg px-2 py-1 text-xs font-mono font-bold text-amber-600 outline-none text-center transition-colors disabled:opacity-50" 
                           />
                         </div>
                         <input 
                           type="range" min="-2" max="2" step="0.1" value={activeProfile.presence_penalty} 
+                          disabled={!activeProfile.use_presence_penalty}
                           onChange={(e) => updateProfileField(activeProfile.id, "presence_penalty", parseFloat(e.target.value))}
-                          className="w-full h-2 bg-amber-200/30 rounded-lg appearance-none cursor-pointer accent-amber-500" 
+                          className="w-full h-2 bg-amber-200/30 rounded-lg appearance-none cursor-pointer accent-amber-500 disabled:accent-slate-400" 
                         />
                       </div>
                     </div>
@@ -519,18 +531,24 @@ export default function App() {
                     {/* Tier 2: Expert Grid */}
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-4 pt-6 border-t border-dashed border-border/40 text-foreground">
                       {[
-                        {l: "Top-P", f: "top_p", s: 0.01},
-                        {l: "Top-K", f: "top_k", s: 1},
-                        {l: "Min-P", f: "min_p", s: 0.01},
-                        {l: t("repeat_penalty"), f: "repeat_penalty", s: 0.05},
-                        {l: t("batch_size"), f: "batch_size", s: 8}
+                        {l: "Top-P", f: "top_p", s: 0.01, u: "use_top_p"},
+                        {l: "Top-K", f: "top_k", s: 1, u: "use_top_k"},
+                        {l: "Min-P", f: "min_p", s: 0.01, u: "use_min_p"},
+                        {l: t("repeat_penalty"), f: "repeat_penalty", s: 0.05, u: "use_repeat_penalty"},
+                        {l: t("batch_size"), f: "batch_size", s: 8, u: "use_batch_size"}
                       ].map(p => (
-                        <div key={p.f} className="space-y-1.5">
-                          <label className="text-[9px] font-bold text-muted-foreground uppercase ml-1 tracking-tighter truncate block">{p.l}</label>
+                        <div key={p.f} className={cn("space-y-1.5 transition-opacity", !(activeProfile as any)[p.u] && "opacity-40")}>
+                          <label 
+                            className="text-[9px] font-bold text-muted-foreground uppercase ml-1 tracking-tighter truncate block cursor-pointer select-none"
+                            onClick={() => updateProfileField(activeProfile.id, p.u as any, !(activeProfile as any)[p.u])}
+                          >
+                            <span className={cn((activeProfile as any)[p.u] ? "" : "line-through")}>{p.l}</span>
+                          </label>
                           <input 
                             type="number" step={p.s} value={(activeProfile as any)[p.f]} 
+                            disabled={!(activeProfile as any)[p.u]}
                             onChange={(e) => updateProfileField(activeProfile.id, p.f as any, p.f === 'batch_size' ? parseInt(e.target.value) : parseFloat(e.target.value))}
-                            className="w-full bg-background border border-border/60 rounded-xl px-3 py-2 text-xs font-mono font-bold outline-none focus:ring-2 focus:ring-primary/20 transition-all text-foreground" 
+                            className="w-full bg-background border border-border/60 rounded-xl px-3 py-2 text-xs font-mono font-bold outline-none focus:ring-2 focus:ring-primary/20 transition-all text-foreground disabled:opacity-50" 
                           />
                         </div>
                       ))}
